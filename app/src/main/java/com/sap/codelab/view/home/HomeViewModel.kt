@@ -2,22 +2,24 @@ package com.sap.codelab.view.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.sap.codelab.model.Memo
-import com.sap.codelab.repository.Repository
+import com.sap.codelab.data.model.MemoEntity
+import com.sap.codelab.domain.repository.MemoRepository
 import com.sap.codelab.utils.coroutines.ScopeProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import org.koin.core.annotation.Factory
 
 /**
  * ViewModel for the Home Activity.
  */
-internal class HomeViewModel : ViewModel() {
+@Factory
+internal class HomeViewModel(private val memoRepository: MemoRepository) : ViewModel() {
 
     private var isShowAll = false
-    private val _memos: MutableStateFlow<List<Memo>> = MutableStateFlow(listOf())
-    val memos: StateFlow<List<Memo>> = _memos
+    private val _memos: MutableStateFlow<List<MemoEntity>> = MutableStateFlow(listOf())
+    val memos: StateFlow<List<MemoEntity>> = _memos
 
     /**
      * Loads all memos.
@@ -25,7 +27,7 @@ internal class HomeViewModel : ViewModel() {
     fun loadAllMemos() {
         isShowAll = true
         viewModelScope.launch(Dispatchers.Default) {
-            _memos.value = Repository.getAll()
+            _memos.value = memoRepository.getAll()
         }
     }
 
@@ -35,7 +37,7 @@ internal class HomeViewModel : ViewModel() {
     fun loadOpenMemos() {
         isShowAll = false
         viewModelScope.launch(Dispatchers.Default) {
-            _memos.value = Repository.getOpen()
+            _memos.value = memoRepository.getOpen()
         }
     }
 
@@ -53,11 +55,11 @@ internal class HomeViewModel : ViewModel() {
      * @param memo      - the memo to update.
      * @param isChecked - whether the memo has been checked (marked as done).
      */
-    fun updateMemo(memo: Memo, isChecked: Boolean) {
+    fun updateMemo(memo: MemoEntity, isChecked: Boolean) {
         ScopeProvider.application.launch(Dispatchers.Default) {
             // We'll only forward the update if the memo has been checked, since we don't offer to uncheck memos right now
             if (isChecked) {
-                Repository.saveMemo(memo.copy(isDone = true))
+                memoRepository.saveMemo(memo.copy(isDone = true))
             }
         }
     }

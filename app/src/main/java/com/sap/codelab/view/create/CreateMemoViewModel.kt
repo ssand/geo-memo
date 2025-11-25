@@ -1,25 +1,28 @@
 package com.sap.codelab.view.create
 
 import androidx.lifecycle.ViewModel
-import com.sap.codelab.model.Memo
-import com.sap.codelab.repository.Repository
+import com.sap.codelab.data.model.MemoEntity
+import com.sap.codelab.domain.repository.MemoRepository
 import com.sap.codelab.utils.coroutines.ScopeProvider
 import com.sap.codelab.utils.extensions.empty
 import kotlinx.coroutines.launch
+import org.koin.core.annotation.Factory
 
 /**
  * ViewModel for matching CreateMemo view. Handles user interactions.
  */
-internal class CreateMemoViewModel : ViewModel() {
+@Factory
+internal class CreateMemoViewModel(private val memoRepository: MemoRepository) : ViewModel() {
 
-    private var memo = Memo(0, String.empty(), String.empty(), 0, 0, 0, false)
+    private var memo = MemoEntity(0, String.empty(), String.empty(), 0, 0, 0, false)
 
     /**
      * Saves the memo in it's current state.
      */
     fun saveMemo() {
+        // todo check if needed
         ScopeProvider.application.launch {
-            Repository.saveMemo(memo)
+            memoRepository.saveMemo(memo)
         }
     }
 
@@ -27,7 +30,7 @@ internal class CreateMemoViewModel : ViewModel() {
      * Call this method to update the memo. This is usually needed when the user changed his input.
      */
     fun updateMemo(title: String, description: String) {
-        memo = Memo(title = title, description = description, id = 0, reminderDate = 0, reminderLatitude = 0, reminderLongitude = 0, isDone = false)
+        memo = MemoEntity(title = title, description = description, id = 0, reminderDate = 0, reminderLatitude = 0, reminderLongitude = 0, isDone = false)
     }
 
     /**

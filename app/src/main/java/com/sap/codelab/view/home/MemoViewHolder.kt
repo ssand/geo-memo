@@ -4,7 +4,7 @@ import androidx.recyclerview.widget.RecyclerView
 import android.view.View
 import android.widget.CompoundButton
 import com.sap.codelab.databinding.RecyclerviewMemoBinding
-import com.sap.codelab.model.Memo
+import com.sap.codelab.data.model.MemoEntity
 
 /**
  * View holder for Memos.
@@ -14,7 +14,7 @@ internal class MemoViewHolder(private val binding: RecyclerviewMemoBinding) : Re
     /**
      * Updates the memo view with the given memo.
      */
-    fun update(memo: Memo, onClick: View.OnClickListener, onCheckboxChanged: CompoundButton.OnCheckedChangeListener) {
+    fun update(memo: MemoEntity, onClick: View.OnClickListener, onCheckboxChanged: CompoundButton.OnCheckedChangeListener) {
         binding.run {
             memoTitle.text = memo.title
             memoText.text = memo.description
@@ -28,7 +28,7 @@ internal class MemoViewHolder(private val binding: RecyclerviewMemoBinding) : Re
     /**
      * Updates the checkbox view.
      */
-    private fun updateCheckbox(memo: Memo, onCheckboxChanged: CompoundButton.OnCheckedChangeListener) {
+    private fun updateCheckbox(memo: MemoEntity, onCheckboxChanged: CompoundButton.OnCheckedChangeListener) {
         // if the view is reused it will already have a listener already set on it. So in order this not to be called when the value is initialized
         // we remove the listener and set it back.
         binding.checkBox.apply {

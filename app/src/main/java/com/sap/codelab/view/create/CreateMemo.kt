@@ -1,29 +1,28 @@
 package com.sap.codelab.view.create
 
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import androidx.annotation.StringRes
-import androidx.lifecycle.ViewModelProvider
+import androidx.appcompat.app.AppCompatActivity
 import com.sap.codelab.R
 import com.sap.codelab.databinding.ActivityCreateMemoBinding
 import com.sap.codelab.utils.extensions.empty
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 /**
  * Activity that allows a user to create a new Memo.
  */
 internal class CreateMemo : AppCompatActivity() {
 
+    private val viewModel: CreateMemoViewModel by viewModel()
     private lateinit var binding: ActivityCreateMemoBinding
-    private lateinit var model: CreateMemoViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityCreateMemoBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
-        model = ViewModelProvider(this)[CreateMemoViewModel::class.java]
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -41,7 +40,7 @@ internal class CreateMemo : AppCompatActivity() {
                 true
             }
 
-            else             -> super.onOptionsItemSelected(item)
+            else -> super.onOptionsItemSelected(item)
         }
     }
 
@@ -50,14 +49,14 @@ internal class CreateMemo : AppCompatActivity() {
      */
     private fun saveMemo() {
         binding.contentCreateMemo.run {
-            model.updateMemo(memoTitle.text.toString(), memoDescription.text.toString())
-            if (model.isMemoValid()) {
-                model.saveMemo()
+            viewModel.updateMemo(memoTitle.text.toString(), memoDescription.text.toString())
+            if (viewModel.isMemoValid()) {
+                viewModel.saveMemo()
                 setResult(RESULT_OK)
                 finish()
             } else {
-                memoTitleContainer.error = getErrorMessage(model.hasTitleError(), R.string.memo_title_empty_error)
-                memoDescription.error = getErrorMessage(model.hasTextError(), R.string.memo_text_empty_error)
+                memoTitleContainer.error = getErrorMessage(viewModel.hasTitleError(), R.string.memo_title_empty_error)
+                memoDescription.error = getErrorMessage(viewModel.hasTextError(), R.string.memo_text_empty_error)
             }
         }
     }
