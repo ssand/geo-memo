@@ -37,7 +37,11 @@ In this challenge the applicant has to implement location-based notifications/re
 - Further refactoring is possible for a better alignment with Clean Architecture principles. For demo purposes I have a few more public repositories that can be checked for other possible architectural solutions [Repo-1](https://github.com/ssand/ma-maison), [Repo-2](https://github.com/ssand/github-repos-demo);
 - Updated the `data` layer to use data sources even though in this project those are just wrappers over the database DAO;
 - For demo purposes I wrote only `CreateMemoViewModelTest` unit tests. All the rest are similar;
-- In a real world scenario `android.permission.ACCESS_MOCK_LOCATION` permission should be moved to a separate `AndroidManifest.xml` available only in debug builds.
+- In a real world scenario `android.permission.ACCESS_MOCK_LOCATION` permission should be moved to a separate `AndroidManifest.xml` available only in debug builds;
+- Further possible improvements:
+  - Modularized architecture to constrain layers separation;
+  - Use Jetpack Compose for UI implementation;
+  - In case of Jetpack Compose use MVI instead of MVVM.
 
 ## Solution
 Each time a new Memo with location details is created a new geofence is registered `GeofenceScheduler.registerMemoGeofence()`
@@ -58,4 +62,4 @@ In the `assets/geofencing_demo.mov` there is a geofencing demo video using Lokit
 3. One memo that contains `completed` in it's title would be used to demonstrate that notifications are not triggered for completed Memos;
 4. The app can be in the background or completely stopped;
 5. Run the Simulation in Lokito;
-6. As mocked coordinates are matching each Memo area a notification is triggered;
+6. As mocked coordinates are matching each Memo area a notification is triggered.
