@@ -2,31 +2,35 @@ package com.sap.codelab.view.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.sap.codelab.data.model.MemoEntity
+import com.sap.codelab.domain.model.Memo
 import com.sap.codelab.domain.repository.MemoRepository
-import com.sap.codelab.utils.coroutines.ScopeProvider
-import kotlinx.coroutines.Dispatchers
+import com.sap.codelab.location.GeofenceScheduler
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.koin.core.annotation.Factory
+import org.koin.android.annotation.KoinViewModel
 
 /**
  * ViewModel for the Home Activity.
  */
-@Factory
-internal class HomeViewModel(private val memoRepository: MemoRepository) : ViewModel() {
+@KoinViewModel
+internal class HomeViewModel(
+    private val memoRepository: MemoRepository,
+    private val geofenceScheduler: GeofenceScheduler
+) : ViewModel() {
 
     private var isShowAll = false
-    private val _memos: MutableStateFlow<List<MemoEntity>> = MutableStateFlow(listOf())
-    val memos: StateFlow<List<MemoEntity>> = _memos
+    private val _memos: MutableStateFlow<List<Memo>> = MutableStateFlow(listOf())
+    val memos: StateFlow<List<Memo>> = _memos.asStateFlow()
 
     /**
      * Loads all memos.
      */
     fun loadAllMemos() {
         isShowAll = true
-        viewModelScope.launch(Dispatchers.Default) {
+        viewModelScope.launch {
             _memos.value = memoRepository.getAll()
         }
     }
@@ -36,7 +40,7 @@ internal class HomeViewModel(private val memoRepository: MemoRepository) : ViewM
      */
     fun loadOpenMemos() {
         isShowAll = false
-        viewModelScope.launch(Dispatchers.Default) {
+        viewModelScope.launch {
             _memos.value = memoRepository.getOpen()
         }
     }
@@ -55,12 +59,25 @@ internal class HomeViewModel(private val memoRepository: MemoRepository) : ViewM
      * @param memo      - the memo to update.
      * @param isChecked - whether the memo has been checked (marked as done).
      */
-    fun updateMemo(memo: MemoEntity, isChecked: Boolean) {
-        ScopeProvider.application.launch(Dispatchers.Default) {
-            // We'll only forward the update if the memo has been checked, since we don't offer to uncheck memos right now
-            if (isChecked) {
-                memoRepository.saveMemo(memo.copy(isDone = true))
+    fun updateMemo(memo: Memo, isChecked: Boolean) = viewModelScope.launch {
+        // We'll only forward the update if the memo has been checked, since we don't offer to uncheck memos right now
+        if (isChecked) {
+            val checkedMemo = memo.copy(isDone = true)
+            memoRepository.saveMemo(checkedMemo)
+
+            // A quick workaround to fix Memo UI state update on check.
+            // A proper fix would imply some refactoring which is not in the scope of this task.
+            _memos.update {
+                it.toMutableList().apply {
+                    indexOf(memo).takeIf { idx -> idx > 0 }?.let { idx ->
+                        if (isShowAll)
+                            this[idx] = checkedMemo
+                        else
+                            this.removeAt(idx)
+                    }
+                }.toList()
             }
+            geofenceScheduler.removeMemoGeofence(memo.id)
         }
     }
 }

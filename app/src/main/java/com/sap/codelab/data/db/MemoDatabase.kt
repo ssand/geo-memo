@@ -12,7 +12,7 @@ import com.sap.codelab.data.model.MemoEntity
     version = 1,
     exportSchema = false
 )
-abstract class Database : RoomDatabase() {
+abstract class MemoDatabase : RoomDatabase() {
 
     abstract fun getMemoDao(): MemoDao
 }

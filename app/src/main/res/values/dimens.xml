@@ -1,4 +1,7 @@
 <resources>
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="padding_activity">10dp</dimen>
+
+    <dimen name="padding_xs">4dp</dimen>
+    <dimen name="padding_m">16dp</dimen>
 </resources>

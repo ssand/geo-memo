@@ -2,9 +2,12 @@ package com.sap.codelab.view.detail
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
-import com.sap.codelab.data.model.MemoEntity
+import com.sap.codelab.R
 import com.sap.codelab.databinding.ActivityViewMemoBinding
+import com.sap.codelab.domain.model.Memo
+import com.sap.codelab.utils.ifLet
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -23,6 +26,7 @@ internal class ViewMemo : AppCompatActivity() {
         binding = ActivityViewMemoBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
+
         if (savedInstanceState == null) {
             // Observe the memo state flow for changes
             lifecycleScope.launch {
@@ -43,12 +47,16 @@ internal class ViewMemo : AppCompatActivity() {
      *
      * @param memo - the memo whose details are to be displayed.
      */
-    private fun updateUI(memo: MemoEntity) {
+    private fun updateUI(memo: Memo) {
         binding.contentCreateMemo.run {
             memoTitle.setText(memo.title)
             memoDescription.setText(memo.description)
             memoTitle.isEnabled = false
             memoDescription.isEnabled = false
+            btnLocation.isVisible = false
+            ifLet(memo.reminderLatitude, memo.reminderLongitude) { (lat, long) ->
+                txtLocation.text = getString(R.string.selected_location, lat, long)
+            }
         }
     }
 }

@@ -10,8 +10,11 @@ import androidx.lifecycle.coroutineScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.sap.codelab.R
-import com.sap.codelab.data.model.MemoEntity
 import com.sap.codelab.databinding.ActivityHomeBinding
+import com.sap.codelab.domain.model.Memo
+import com.sap.codelab.utils.GEO_CHANNEL_ID
+import com.sap.codelab.utils.GEO_CHANNEL_NAME
+import com.sap.codelab.utils.createNotificationChannel
 import com.sap.codelab.view.create.CreateMemo
 import com.sap.codelab.view.detail.BUNDLE_MEMO_ID
 import com.sap.codelab.view.detail.ViewMemo
@@ -48,6 +51,8 @@ internal class Home : AppCompatActivity() {
             createMemoLauncher.launch(Intent(this@Home, CreateMemo::class.java))
         }
         viewModel.loadOpenMemos()
+        // Create notification channel here to enforce notification permission request
+        createNotificationChannel(this, GEO_CHANNEL_ID, GEO_CHANNEL_NAME, GEO_CHANNEL_NAME)
     }
 
     /**
@@ -56,10 +61,10 @@ internal class Home : AppCompatActivity() {
     private fun initializeAdapter(): MemoAdapter {
         val adapter = MemoAdapter(mutableListOf(), { view ->
             // Implementation for when the user selects a row to show the detail view
-            showMemo((view.tag as MemoEntity).id)
+            showMemo((view.tag as Memo).id)
         }, { checkbox, isChecked ->
             // Implementation for when the user marks a memo as completed
-            viewModel.updateMemo(checkbox.tag as MemoEntity, isChecked)
+            viewModel.updateMemo(checkbox.tag as Memo, isChecked)
             viewModel.refreshMemos()
         })
         lifecycle.coroutineScope.launch {

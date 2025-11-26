@@ -8,6 +8,7 @@ import org.koin.core.annotation.Module
 @Module(
     includes = [
         DataModule::class,
+        LocationModule::class,
         CreateViewModelModule::class,
         DetailViewModelModule::class,
         HomeViewModelModule::class

@@ -1,31 +1,33 @@
 package com.sap.codelab.data.repository
 
-import androidx.annotation.WorkerThread
-import com.sap.codelab.data.db.Database
-import com.sap.codelab.data.model.MemoEntity
+import com.sap.codelab.data.datasource.MemoDataSource
+import com.sap.codelab.data.mapper.toDomain
+import com.sap.codelab.data.mapper.toEntity
+import com.sap.codelab.domain.model.Memo
 import com.sap.codelab.domain.repository.MemoRepository
-import org.koin.core.annotation.Single
+import org.koin.core.annotation.Factory
 
 /**
  * The repository is used to retrieve data from a data source.
  */
-@Single
-class MemoRepositoryImpl(private val database: Database) : MemoRepository {
+@Factory
+class MemoRepositoryImpl(private val localDs: MemoDataSource) : MemoRepository {
 
-    @WorkerThread
-    override fun saveMemo(memo: MemoEntity) {
-        database.getMemoDao().insert(memo)
-    }
+    override suspend fun saveMemo(memo: Memo): Long =
+        localDs.saveMemo(memo.toEntity())
 
-    @WorkerThread
-    override fun getOpen(): List<MemoEntity> =
-        database.getMemoDao().getOpen()
+    override suspend fun getOpen(): List<Memo> =
+        localDs.getOpen().toDomain()
 
-    @WorkerThread
-    override fun getAll(): List<MemoEntity> =
-        database.getMemoDao().getAll()
+    override suspend fun getAll(): List<Memo> =
+        localDs.getAll().toDomain()
 
-    @WorkerThread
-    override fun getMemoById(id: Long): MemoEntity =
-        database.getMemoDao().getMemoById(id)
+    override suspend fun getMemoById(id: Long): Memo =
+        localDs.getMemoById(id).toDomain()
+
+    override suspend fun getActiveMemoById(id: Long): Memo =
+        localDs.getActiveMemoById(id).toDomain()
+
+    override suspend fun getActiveMemosWithLocation(): List<Memo> =
+        localDs.getActiveMemosWithLocation().toDomain()
 }

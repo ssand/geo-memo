@@ -39,5 +39,30 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
+    <Button
+        android:id="@+id/btn_location"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/padding_m"
+        android:drawableStart="@android:drawable/ic_dialog_map"
+        android:drawablePadding="@dimen/padding_xs"
+        android:drawableTint="@color/colorPrimaryDark"
+        android:text="@string/select_location"
+        android:textAllCaps="false"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/memo_description_container" />
+
+    <TextView
+        android:id="@+id/txt_location"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/padding_m"
+        android:gravity="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btn_location"
+        tools:text="Selected Location:\nlat 1234 \nlang 23455" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
